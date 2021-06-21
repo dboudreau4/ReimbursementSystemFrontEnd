@@ -1,0 +1,87 @@
+.container {
+    display: grid;
+    grid-template-columns: 0.2fr 2.6fr 0.2fr;
+    grid-template-rows: 0.3fr 2.4fr 0.3fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "top top top"
+      ". info ."
+      "bottom bottom bottom";
+    background-color:aliceblue;
+  }
+  
+.top { 
+    grid-area: top; 
+    background-color: rgb(9, 107, 9);
+}
+
+.top p{
+    font-weight: 100;
+    font-size: 1.8em;
+    text-align: center;
+    font-family: sans-serif;
+    color:aliceblue;
+    margin-bottom: 30px;
+}
+
+.top button{
+    background-color: #6fe789;
+    position: absolute;
+    right: 0;
+    border: 2px solid black;
+}
+  
+.bottom { 
+    grid-area: bottom;
+    background-color: rgb(9, 107, 9);
+ }
+
+.info {
+display: grid;
+grid-template-columns: 1fr 0.5fr 1.5fr;
+grid-template-rows: 0.4fr 1.6fr 1fr;
+gap: 0px 0px;
+grid-auto-flow: row;
+grid-template-areas:
+    "summary summary summary"
+    "status status exp-bkd"
+    "status status exp-bkd";
+grid-area: info;
+}
+
+.summary { 
+    grid-area: summary; 
+    background-color: #6fe789;
+}
+
+.summary p{
+    font-weight: 100;
+    font-size: 1.8em;
+    font-family: sans-serif;
+    text-align: center;
+    color:aliceblue;
+    margin-bottom: 30px;
+}
+
+.status { grid-area: status; }
+
+.exp-bkd { grid-area: exp-bkd; }
+
+button, button:focus {
+    outline: none;
+    box-shadow:none !important;
+    background-color: rgb(9, 107, 9);
+    border: none;
+    font-weight: 100;
+    font-size: 1em;
+    color: white;
+    padding: 10px 30px;
+    cursor: pointer;
+}
+
+#logout{
+    position: absolute;
+    right: 0;
+    background-color: #6fe789;
+}

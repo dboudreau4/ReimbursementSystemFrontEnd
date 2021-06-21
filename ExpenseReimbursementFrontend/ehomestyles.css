@@ -1,0 +1,106 @@
+.container {
+    display: grid;
+    grid-template-columns: 0.3fr 2fr 0.7fr;
+    grid-template-rows: 0.4fr 2.3fr 0.3fr;
+    gap: 20px 20px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "title title title"
+      ". info ."
+      "foot foot foot";
+    width: 100%;
+    height: 100%;
+    position: relative;
+    font-family: sans-serif;
+    background-color: rgb(244, 245, 184);
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+  
+.title { 
+    grid-area: title;
+    background-color: royalblue;
+}
+
+.title p{
+    font-weight: 100;
+    font-size: 1.8em;
+    text-align: center;
+    font-family: sans-serif;
+    margin-bottom: 30px;
+}
+
+.title button{
+    background-color: #6fc5e7;
+    position: absolute;
+    right: 0;
+}
+  
+.info {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 0.4fr 1.6fr 1fr;
+    gap: 10px 10px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "description description description"
+      "table table table"
+      "table table table";
+    grid-area: info;
+}
+
+.description{grid-area: description;} 
+
+.description p{
+    font-weight: 100;
+    font-size: 1.2em;
+    text-align: left;
+    font-family: sans-serif;
+    margin-bottom: 10px;
+}
+  
+.table { grid-area: table; }
+
+.foot{
+    grid-area: foot;
+    background-color: royalblue;
+}
+
+textarea, button, button:focus {
+    outline: none;
+    box-shadow:none !important;
+    background-color: royalblue;
+    border: none;
+    font-weight: 100;
+    font-size: 1em;
+    color: white;
+    padding: 10px 30px;
+    cursor: pointer;
+}
+
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th {
+    border: 1px solid black;
+    height: 50px;
+    background-color: royalblue;
+}
+
+td{
+    border: 1px solid black;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(odd) {
+    background-color: #6fc5e7;
+}
+
+
+  

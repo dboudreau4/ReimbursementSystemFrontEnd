@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Manager Portal</title>
+    <link rel="stylesheet" href="mhomestyles.css">
+</head>
+<body class="container">
+    
+    <button onclick="logout()" id="logout">Log out</button>
+        <div class="title">
+            <p id="managerHeader"></p>
+            <button onclick="toStats()" id="stats">View Statistics</button>
+        </div>
+        
+        <div class="info">
+                <div class="description">
+                    <p>These are all the requests submitted by employees. Click view on a request to approve, deny, and edit.
+                        The statistics page is also available.
+                    </p>
+                </div>
+            <div class="table">
+                <table>
+                    <thead><th>Request ID</th><th>Employee ID</th><th>Amount</th><th>Reason</th><th>Status</th><th>Reviewed by</th><th>Message</th><th>View Request</th></thead>
+                    <tbody id="requestTableBody">
+            
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="foot"></div>
+    
+</body>
+<script>
+    const requestTableBody = document.getElementById("requestTableBody")
+    const mId = localStorage.getItem("managerId");
+    const mHead = document.getElementById("managerHeader");
+    mHead.innerHTML = "Signed in as Manager: " + localStorage.getItem("managerName");
+
+    function viewRequest(rId){
+        console.log("called")
+        localStorage.setItem("requestId", rId)
+        window.location.replace("viewrequest.html")
+    }
+    
+    async function getRequests(){
+        const response = await fetch(`http://localhost:5000/ERS/managers/requests`)
+        const requests = await response.json()
+
+        let money = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'});
+        let innerRows = ""
+        for(let request of requests){
+            if((request.approved == "pending") && request.managerId == 1){
+                request.managerId = ""
+            }
+            innerRows += `<tr>
+            <td align='center'>${request.requestId}</td>
+            <td align='center'>${request.employeeId}</td>
+            <td align='center'>${money.format(request.amount)}</td>
+            <td>${request.reason}</td>
+            <td align='center'>${request.approved}</td>
+            <td align='center'>${request.managerId}</td>
+            <td>${request.message}</td>
+            <td align='center'><button onclick="viewRequest(${request.requestId})" id="${request.requestId}">View</button></td>
+            </tr>`
+        }
+        requestTableBody.innerHTML = innerRows
+    }
+
+    getRequests()
+
+    function logout(){
+        localStorage.clear();
+        window.location.replace("managerlogin.html");
+    }
+
+    function toStats(){
+        window.location.replace("statspage.html");
+    }
+
+</script>
+</html>

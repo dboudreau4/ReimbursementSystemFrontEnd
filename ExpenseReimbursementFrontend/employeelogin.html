@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Employee Login</title>
+    <link rel="stylesheet" href="loginstyles.css">
+</head>
+<body>
+    <div class="page-centered">
+        <div class="logo">
+            <p>E</p>
+        </div>
+        <h1 class="login-h1">Employee Login</h1>
+        
+            <div class="form-group">
+                <input type="text" placeholder="Username" required class="form-control form-input" id="usernameInput">
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="Password" required class="form-control form-input" id="passwordInput">
+            </div>
+            <button onclick="perform()" class="form-submit" id="login">Log In</button>
+    </div>
+    
+</body>
+<script>
+
+    function perform(){
+        const username = document.getElementById("usernameInput").value;
+        const password = document.getElementById("passwordInput").value;
+
+        async function employeeLogin(){
+            const response = await fetch("http://localhost:5000/ERS/employees");
+            const employees = await response.json();
+            
+            found = false;
+            for(let employee of employees){
+                if((employee.username == username) && (employee.password == password)){
+                    localStorage.setItem("employeeId", employee.employeeId);
+                    localStorage.setItem("employeeName", (employee.firstName + " " + employee.lastName));
+                    window.location.replace("employeehomepage.html");
+                    found = true;
+                }
+                
+            }
+            if(found === false){
+                alert("Your login information is wrong. Please try again.");
+            }
+        }
+
+        employeeLogin()
+    }
+
+</script>
+</html>

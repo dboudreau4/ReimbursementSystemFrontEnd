@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>View Request</title>
+    <link rel="stylesheet" href="submitform.css">
+    <link rel="stylesheet" href="mhomestyles.css">
+</head>
+<body>
+    
+    <div class="page-centered">
+        <div class="logo2">
+            <p id="employeeName"></p>
+        </div>
+            <table>
+                <thead><th>Employee ID</th><th>Amount</th><th>Reason</th><th>Status</th><th>Reviewed by</th><th>Message</th></thead>
+                <tbody id="requestTableBody">
+    
+                </tbody>
+            </table>
+            
+            <button onclick="editRequest()" class="btn" id="save">Save changes</button>
+            <button onclick="returnToHome()" class="btn" id="toHome">Return to Manager Portal</button>
+        </div>
+</body>
+<script>
+    console.log(localStorage.getItem("requestId"))
+    const rId = localStorage.getItem("requestId")
+    const empName = document.getElementById("employeeName")
+    const requestTableBody = document.getElementById("requestTableBody")
+
+    async function getEmployeeName(eId){
+        const response = await fetch(`http://localhost:5000/ERS/employees/${eId}`)
+        const employee = await response.json()
+
+        empName.innerHTML = "Submitted by: " + employee.firstName + " " + employee.lastName
+    }
+
+
+    async function getRequest(){
+        const response = await fetch(`http://localhost:5000/ERS/managers/requests/${rId}`)
+        const request = await response.json()
+
+        let innerRows = ""
+
+        if(request.status === "pending"){
+            innerRows += `<tr>
+            <td align='center'>${request.employeeId}</td>
+            <td align='center'>${request.amount}</td>
+            <td>${request.reason}</td>
+            <td align='center'>
+                <select name="status" id="status-select">
+                    <option value="">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="denied">Denied</option>
+                    </select></td>
+            <td align='center'><input type="number" id="managerId"></td>
+            <td><input type="text" id="message"></td>
+            </tr>`
+        }
+        else{
+            innerRows += `<tr>
+            <td align='center'>${request.employeeId}</td>
+            <td align='center'>${request.amount}</td>
+            <td>${request.reason}</td>
+            <td align='center'>
+                <select name="status" id="status-select">
+                    <option value="">${request.approved.charAt(0).toUpperCase() + request.approved.slice(1)}</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="denied">Denied</option>
+                    </select></td>
+            <td align='center'><input type="number" id="managerId" value=${request.managerId}></td>
+            <td><input type="text" id="message" value="${request.message}""></td>
+            </tr>`
+        }
+
+        getEmployeeName(request.employeeId)
+        requestTableBody.innerHTML = innerRows
+        localStorage.setItem("eId", request.employeeId)
+        localStorage.setItem("amount", request.amount)
+        localStorage.setItem("reason", request.reason)
+        
+    }
+
+    getRequest()
+
+    async function editRequest(){
+        const empId = localStorage.getItem("eId")
+        const amount = localStorage.getItem("amount")
+        const reason = localStorage.getItem("reason")
+        const status = document.getElementById("status-select").value
+        const mId = document.getElementById("managerId").value
+        const message = document.getElementById("message").value
+
+        const request = {
+            requestId:0,
+            employeeId:Number(empId),
+            amount:Number(amount),
+            reason:reason,
+            approved:status,
+            managerId:mId,
+            message:message
+        }
+
+        const config = {
+            method:"PUT",
+            headers:{'Content-Type':"application/json"},
+            body:JSON.stringify(request)
+        }
+
+        const response = await fetch(`http://localhost:5000/ERS/managers/requests/${rId}`, config)
+
+        if(response.status === 205){
+            alert("The request was successfully submitted")
+        }
+        else{
+            alert("Something went wrong")
+        }
+    }
+    
+    function returnToHome(){
+        window.location.replace("managerhomepage.html")
+    }
+    
+</script>
+</html>

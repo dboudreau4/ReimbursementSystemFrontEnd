@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Employee Portal</title>
+    <link rel="stylesheet" href="ehomestyles.css">
+</head>
+<body class="container">
+    
+    
+        <div class="title">
+            <p id="employeeHeader"></p>
+            <button onclick="logout()" id="logout">Log out</button>
+        </div>
+            
+            <div class="info">
+                    <div class="description">
+                        <p>These are all the requests you have submitted. A manager will get to your pending requests. 
+                            If you have a new reimbursement request to submit, click the submit new request button.</p>
+                        <button onclick="toSubmitPage()" id="submitBtn">Submit new request</button>
+                    </div>
+                <div class="table">
+                    <table>
+                        <thead><th>Request ID</th><th>Employee ID</th><th>Amount</th><th>Reason</th><th>Status</th><th>Reviewed by</th><th>Message</th></thead>
+                        <tbody id="requestTableBody">
+                
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <div class="foot"></div>
+   
+
+</body>
+
+<script>
+    const requestTableBody = document.getElementById("requestTableBody");
+    const empId = localStorage.getItem("employeeId");
+    const empHead = document.getElementById("employeeHeader");
+    empHead.innerHTML = "Reimbursements for: " + localStorage.getItem("employeeName");
+    
+    async function getEmployeeRequests(){
+        const response = await fetch(`http://localhost:5000/ERS/employees/${empId}/requests`);
+        const requests = await response.json();
+
+        let money = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'});
+        let innerRows = "";
+
+        for(let request of requests){
+            innerRows += `<tr>
+            <td align='center'>${request.requestId}</td>
+            <td align='center'>${request.employeeId}</td>
+            <td align='center'>${money.format(request.amount)}</td>
+            <td>${request.reason}</td>
+            <td align='center'>${request.approved}</td>
+            <td align='center'>${request.managerId}</td>
+            <td>${request.message}</td>
+            </tr>`
+        }
+        requestTableBody.innerHTML = innerRows;
+    }
+
+    getEmployeeRequests()
+
+    function toSubmitPage(){
+        window.location.replace("submitrequest.html");
+    }
+
+    function logout(){
+        localStorage.clear();
+        window.location.replace("employeelogin.html");
+    }
+
+    
+</script>
+</html>

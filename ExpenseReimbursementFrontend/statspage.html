@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Statistics</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"></script>
+    <link rel="stylesheet" href="stats.css">
+</head>
+<body>
+   <div class="container">
+    <button onclick="logout()" id="logout">Log out</button>
+        <div class="top">
+            <p id="managerHeader"></p>
+            <button onclick="returnToHome()" class="btn" id="toHome">Return to Manager Portal</button>
+        </div>
+        
+        <div class="info">
+            <div class="summary"><p id="mean"></p></div>
+            <div class="status"><canvas id="statusChart" width="400" height="400"></canvas></div>
+            <div class="exp-bkd"><canvas id="expbdChart" width="400" height="400"></canvas></div>
+        </div>
+        <div class="bottom"></div>
+  </div>
+    
+</body>
+
+<script>
+    
+    /* Variable initializations and declarations for web elements and data*/
+    const mHead = document.getElementById("managerHeader");
+    mHead.innerHTML = "Viewing as Manager: " + localStorage.getItem("managerName");
+
+    const meanDisplay = document.getElementById("mean");
+
+    let ctx = document.getElementById('expbdChart').getContext('2d');
+    const expLabels = [];
+    const expData = [];
+
+    let ctx2 = document.getElementById('statusChart').getContext('2d');
+    const statusData = [];
+
+    makeStatusChart();
+    makeExpChart();
+
+    /* Creates the status chart */
+    async function makeStatusChart(){
+        await statusBreakdown();
+        let statusBkd = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels:["Pending", "Approved", "Denied"],
+                datasets: [{
+                    label:'Status breakdown',
+                    data:statusData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                    ],
+                    borderWidth: 1,
+                    hoverBorderWidth:3,
+                    hoverBorderColor:"#000"
+                }]
+            },
+            options:{
+                plugins:{
+                    title:{
+                        display:true,
+                        text:'Status of All Requests',
+                        font:{
+                            weight: 'bold',
+                            size: 30
+                        }
+                    },
+                },
+                layout: {
+                    padding: {
+                        top: 20,
+                        bottom: 20,
+                        left:20,
+                        right:20
+                    }
+                }
+            }
+        });
+    }
+    
+    /* Creates the expense breakdown chart */
+    async function makeExpChart(){
+        await expenseByEmployee();
+        let expenseBreakdown = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels:expLabels,
+                datasets: [{
+                    label:'Employee expenses',
+                    data:expData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                    ],
+                    borderWidth: 1,
+                    hoverBorderWidth:3,
+                    hoverBorderColor:"#000"
+                }]
+            },
+            options:{
+                plugins:{
+                    title:{
+                        display:true,
+                        text:'Expense by Employee',
+                        font:{
+                            weight: 'bold',
+                            size: 30
+                        }
+                    },
+                },
+                layout: {
+                    padding: {
+                        top: 20,
+                        bottom: 20,
+                        left:20,
+                        right:20
+                    }
+                }
+            }
+        });
+    }
+    
+   /* Only function used in this file: sends an http request to get all reimbursements */
+    async function getRequests(){
+        const response = await fetch(`http://localhost:5000/ERS/managers/requests`);
+        const requests = await response.json();
+        return requests;
+    }
+
+    /* Grabs all reimbursement requests and determines the mean of all expense amounts */
+    async function meanCosts(){
+        const requests = await getRequests();
+
+        const amounts = [];
+        for(let request of requests){
+            amounts.push(request.amount);
+        }
+
+        let sum = 0;
+        for(let i = 0; i < amounts.length; i++){
+            sum += amounts[i];
+        }
+        let mean = sum / amounts.length;
+        let money = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'});
+        meanDisplay.innerHTML = "Mean of all reimbursement expenses: " + money.format(mean);
+        return(sum / amounts.length);
+    }
+    meanCosts();
+
+    /* Grabs all reimbursement requests and sets the data needed for the expense breakdown chart:
+        employee ids and total expenses submitted to each employee */
+    async function expenseByEmployee(){
+        const requests = await getRequests();
+        let cont = {};
+        requests.forEach(function(data) {
+            if(cont.hasOwnProperty(data.employeeId)){
+                cont[data.employeeId] = cont[data.employeeId] + data.amount;
+            }
+            else{
+                cont[data.employeeId] = data.amount;
+            }
+        });
+        let aggr = [];
+        for(let p in cont){
+            aggr.push({employeeId: p, amount: cont[p]});
+        }
+        let eIds = aggr.map(e => e.employeeId);
+        eIds.forEach((id)=>expLabels.push(id));
+        //let money = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'});
+        let eAmts = aggr.map(e => e.amount);
+        //eAmts.forEach((amt)=>expData.push(money.format(amt)));
+        eAmts.forEach((amt)=>expData.push(amt));
+    }
+
+    /* Grabs all reimbursement requests and counts the occurrences of each status: pending, approved,
+        and denied. The data is pushed to the status data array used by the status breakdown chart */
+    async function statusBreakdown(){
+        const requests = await getRequests();
+        let pCounter = 0;
+        let aCounter = 0;
+        let dCounter = 0;
+        for(let request of requests){
+            if(request.approved == "pending"){
+                pCounter += 1;
+            }
+            if(request.approved == "approved"){
+                aCounter += 1;
+            }
+            if(request.approved == "denied"){
+                dCounter += 1;
+            }
+        }
+        statusData.push(pCounter);
+        statusData.push(aCounter);
+        statusData.push(dCounter);
+    }
+
+    statusBreakdown();
+    
+    function logout(){
+        localStorage.clear();
+        window.location.replace("managerlogin.html");
+    }
+
+    function returnToHome(){
+        window.location.replace("managerhomepage.html")
+    }
+    
+</script>
+</html>

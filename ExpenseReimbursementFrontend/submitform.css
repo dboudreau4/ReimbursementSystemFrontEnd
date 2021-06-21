@@ -1,0 +1,124 @@
+body{
+    background-color: aliceblue;
+}
+.page-centered {
+    width: 80%;
+    height: 70%;
+    position: absolute;
+    top: 40%;
+    left: 45%;
+    font-family: sans-serif;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+
+.login-h1 {
+    font-weight: 100;
+    font-size: 1.8em;
+    font-weight: 100;
+    text-align: center;
+    font-family: sans-serif;
+    margin-bottom: 30px;
+}
+.form-input {
+    width:50%;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+    font-weight: 100;
+    border-radius: 0px !important;
+    padding: 5px 20px;
+}
+input, button, button:focus {
+    outline: none;
+    box-shadow:none !important;
+}
+select{
+    font-size: 1em;
+    font-weight: 100;
+}
+label{
+    font-size: 1.5em;
+}
+input{
+    text-align: center;
+    font-size: 1em;
+    font-weight: 100;
+}
+textarea{
+    width:100%;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+    font-weight: 100;
+    font-family: sans-serif;
+    border-radius: 0px !important;
+    padding: 10px 20px;
+}
+
+.logo {
+    width:100%;
+    height: 100px;
+    color: white;
+    background-color: royalblue;
+    margin-bottom: 10px;
+}
+
+.logo p {
+    position: relative;
+    top: 50%;
+    text-align: left;
+    transform: translate(-1%,-50%);
+    -ms-transform: translateX(-1%) translateY(-50%);
+    -webkit-transform: translate(-1%,-50%);
+    font-size: 1.5em;
+    font-weight: 100;
+    padding: 10px 20px;
+}
+
+.logo2{
+    width:100%;
+    height: 100px;
+    color: white;
+    background-color:rgb(9, 107, 9);
+    margin-bottom: 10px;
+}
+
+.logo2 p{
+    position: relative;
+    top: 50%;
+    text-align: left;
+    transform: translate(-1%,-50%);
+    -ms-transform: translateX(-1%) translateY(-50%);
+    -webkit-transform: translate(-1%,-50%);
+    font-size: 1.5em;
+    font-weight: 100;
+    padding: 10px 20px;
+}
+
+.form-submit {
+    background-color: royalblue;
+    width: 20%;
+    height: 10%;
+    border: none;
+    font-weight: 100;
+    font-size: 1em;
+    color: white;
+    padding: 10px 10px;
+    cursor: pointer;
+}
+
+.btn{
+    background-color:rgb(9, 107, 9);
+    width: 20%;
+    height: 10%;
+    border: none;
+    font-weight: 100;
+    font-size: 1em;
+    color: white;
+    padding: 10px 10px;
+    cursor: pointer;
+}
+
+#message{
+    width: 95%;
+}

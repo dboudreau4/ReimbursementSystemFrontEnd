@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Manager Login</title>
+    <link rel="stylesheet" href="loginstyles.css">
+</head>
+<body>
+    <div class="page-centered">
+        <div class="mlogo">
+            <p>M</p>
+        </div>
+        <h1 class="login-h1">Manager Login</h1>
+        
+            <div class="form-group">
+                <input type="text" placeholder="Username" required class="form-control form-input" id="usernameInput">
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="Password" required class="form-control form-input" id="passwordInput">
+            </div>
+            <button onclick="perform()" class="mform-submit" id="login">Log In</button>
+    </div>
+    
+</body>
+<script>
+    function perform(){
+        const username = document.getElementById("usernameInput").value;
+        const password = document.getElementById("passwordInput").value;
+
+        async function managerLogin(){
+            const response = await fetch("http://localhost:5000/ERS/managers");
+            const managers = await response.json();
+            
+            found = false;
+            for(let manager of managers){
+                if((manager.username == username) && (manager.password == password)){
+                    localStorage.setItem("managerId", manager.managerId);
+                    localStorage.setItem("managerName", (manager.firstName + " " + manager.lastName));
+                    window.location.replace("managerhomepage.html");
+                    found = true;
+                }
+            }
+            if(found === false){
+                alert("Your login information is wrong. Please try again.");
+            }
+        }
+
+        managerLogin()
+    }
+</script>
+</html>

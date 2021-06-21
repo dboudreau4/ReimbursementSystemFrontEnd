@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>New request form</title>
+    <link rel="stylesheet" href="submitform.css">
+</head>
+<body>
+
+    <div class="page-centered">
+        <div class="logo">
+            <p>New request form: <br> Make sure to leave a reason. If the reason is unclear, the manager may not approve your request.</p>
+        </div>
+        
+            <div class="form-group">
+                <input type="text" placeholder="Amount" required class="form-control form-input" id="amountInput">
+            </div>
+            <div class="form-group">
+                <label for="reasonInput">Reason</label>
+                <textarea class="form-control" rows="5" id="reasonInput"></textarea>
+            </div>
+            <button onclick="submitRequest()" class="form-submit" id="submit">Submit</button>
+            <button onclick="returnToHome()" class="form-submit" id="toHome">Return to Employee Portal</button>
+    </div>
+
+</body>
+<script>
+    
+
+    async function submitRequest(){
+        const amount = document.getElementById("amountInput").value
+        const reason = document.getElementById("reasonInput").value
+        const empId = localStorage.getItem("employeeId")
+        
+        const request = {
+            requestId:0,
+            employeeId:Number(empId),
+            amount:Number(amount),
+            reason:reason,
+            approved:"",
+            managerId:1,
+            message:""
+        }
+
+        const config = {
+            method:"POST",
+            headers:{'Content-Type':"application/json"},
+            body:JSON.stringify(request)
+        }
+
+        const response = await fetch(`http://localhost:5000/ERS/employees/${empId}/requests`, config)
+
+        if(response.status === 201){
+            alert("The request was successfully submitted")
+        }
+        else{
+            alert("Something went wrong")
+        }
+        
+    }
+
+    function returnToHome(){
+        window.location.replace("employeehomepage.html")
+    }
+
+</script>
+</html>
+
